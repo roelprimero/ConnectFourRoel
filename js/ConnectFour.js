@@ -3,26 +3,25 @@ $(function() {
         'use strict';
 		var disk = {
 			diameter: 'default',
-			padding: 8,
+			padding: 2,
 			red: {
 				name: 'red',
 				fill: 'red',
-				stroke: 'purple'
+				stroke: 'black'
 			},
 			yellow : {
 				name: 'yellow',
 				fill: 'yellow',
-				stroke: 'purple'
+				stroke: 'black'
 			},
 			default : {
 				name: 'White',
 				fill: 'White',
-				stroke: 'purple'
+				stroke: 'black'
 			}
 		},
 		boardSetting = {
-			diameter:'default',
-			padding: 1,
+			diskDiameter:'default',
 			max_width: 7,
 			max_height: 6,
 			moveCounter: 0,
@@ -39,24 +38,23 @@ $(function() {
 		c,   //context
 		ctx,
 		cells = 
-		[ 							   //fix to 6x7 as the game requires
-            ['', '', '', '', '', '', ''],      // (5,0)   (5, 1)    (5, 2)
+		[ 							   		   // fix to 6x7 as the game requires
+            ['', '', '', '', '', '', ''],      // (5,0)   (5, 1)    (5, 2) ...
             ['', '', '', '', '', '', ''],
             ['', '', '', '', '', '', ''],
             ['', '', '', '', '', '', ''],
             ['', '', '', '', '', '', ''],
             ['', '', '', '', '', '', ''], 
-            ['', '', '', '', '', '', ''],       // (0,0)   (0, 1)   (0, 2)
+            ['', '', '', '', '', '', ''],       // (0,0)   (0, 1)   (0, 2) ... 
 		],		
 		c = document.getElementById("board");
 		ctx = c.getContext("2d");
 		c.style.background = 'blue';
-
-		boardSetting.diameter =  (c.width/7) - (disk.padding*2);
+		boardSetting.diskDiameter =  (c.width/boardSetting.max_width) - (disk.padding * 2);
 
 		function drawCircle(cx,cy,circleFill,circleStroke){
 			ctx.beginPath();
-			ctx.arc(cx,cy,boardSetting.diameter/2, 0, 2*Math.PI, false);
+			ctx.arc(cx,cy,boardSetting.diskDiameter/2, 0, 2*Math.PI, false);
 			ctx.fillStyle = circleFill;
 			ctx.fill();
 			ctx.lineWidth = 1;
@@ -65,10 +63,9 @@ $(function() {
 		}
 
 		function drawDisk(col, row, name){
-			var cx = (c.width / boardSetting.max_width) * (col + 1) - boardSetting.diameter / 2;
-			var cy =  c.height - ((c.height / boardSetting.max_height) * (row + 1) - boardSetting.diameter / 2);
+			var cx = (c.width / boardSetting.max_width) * (col + 1) - boardSetting.diskDiameter / 2;
+			var cy =  c.height - ((c.height / boardSetting.max_height) * (row + 1) - boardSetting.diskDiameter / 2);
 
-			//console.log("cx and cy: " + cx + " " + cy);
 			if (name == disk.red.name){
 				drawCircle(cx,cy, disk.red.fill, disk.red.stroke);
 			} else if (name == disk.yellow.name) {
@@ -90,7 +87,6 @@ $(function() {
 
 		function initialize()
 		{
-			alert("Initializing Board");
 			for (var row = 0; row < cells.length; row++){
 				for(var column =0; column < cells[row].length; column++){
 					cells[row][column] = '';
@@ -99,26 +95,23 @@ $(function() {
 		}
 
 		// assign disk name with name so the value should be either red or yellow
-		// always red first
+		// Limitation: always yellow first
 
 		function addDisk(column, name){
 			for(var i = 0; i < cells.length; i++){   //check height of array
 				if(cells[i][column] == '') {
 					cells[i][column] = name;
-					//console.log(i, name);
 					break;
 				}	
 			}
 			return i;
 		}			
 
-		drawDisks();
-
 		function getValue(row, column){
-			if (row > 6 || row < 0 || column > 7 || column < 0 )
+			if (row > 6 || row < 0 || column > 7 || column < 0 ) //detects out of boounds
 				return -1;
 
-			return cells[row][column];
+			return cells[row][column]; //return value of the coordinate
 		}
 
 		function checkWinner(){
@@ -127,7 +120,6 @@ $(function() {
 				for (var j = 0; j < 7; j++){      // column
 					var temp = getValue(i,j);
 					if (temp != -1 && temp != '' && (temp == getValue(i,j+1)) && (temp == getValue(i,j+2)) && (temp ==getValue(i,j+3))) {
-						//console.log("WINNER ROW " + i + j + " " + getValue(i,j) + " " + getValue(i,j+1) + " " + getValue(i,j+2));
 						return temp;
 					}
 				}
@@ -138,7 +130,6 @@ $(function() {
 				for (var j = 0; j < 7; j++){      // column
 					var temp = getValue(i,j);
 					if (temp != -1 && temp != '' && (temp == getValue(i+1,j)) && (temp == getValue(i+2,j)) && (temp ==getValue(i+3,j))) {
-						//console.log("WINNER COLUMN " + i + j + " " + getValue(i+1,j) + " " + getValue(i+2,j) + " " + getValue(i+2,j));
 						return temp;
 					}
 				}
@@ -149,21 +140,23 @@ $(function() {
 				for (var j = 0; j < 7; j++){      // column
 					var temp = getValue(i,j);
 					if (temp != -1 && temp != '' && (temp == getValue(i+1,j+1)) && (temp == getValue(i+2,j+2)) && (temp ==getValue(i+3,j+3))) {
-						//console.log("WINNER DIAGONAL " + i + j + " " + getValue(i+1,j) + " " + getValue(i+2,j) + " " + getValue(i+2,j));
 						return temp;
 					}
 				}
 			}
 		}
+
+	//intially draw the disk	
+	drawDisks(); 
 	
 	//reference: http://www.informit.com/articles/article.aspx?p=1903884&seqNum=6
-
 	/*c.addEventListener('click', function (e) {
 	    // React to the mouse down event
 	});*/
-	function windowToCanvas(x, y) {
-	   var bbox = c.getBoundingClientRect();
 
+	function windowToCanvas(x, y) {
+	   //window.location.href=window.location.href;
+	   var bbox = c.getBoundingClientRect();
 	   return { 
 	   	x: x - bbox.left * (c.width  / bbox.width),
 	    y: y - bbox.top  * (c.height / bbox.height)
@@ -171,17 +164,17 @@ $(function() {
 	}
 
 	c.onclick = function (e) {
-	    // React to the mouse down event
+	    // React to the mouse click event
 	    var currLocation = windowToCanvas(e.clientX, e.clientY);
 	    var column;
 
-	    //console.log(currLocation.x, currLocation.y);
 	    //needs to determine Column from CurrentLocation
-	    //board is 700x700, 
-	    
+	    //board is 700x700
+	    //design is still hard-coded, could use diffent Math functions for improvement
+
 	    if (currLocation.x >= 0 && currLocation.x <= 100){
 	    	column = 0;
-	    	boardSetting.moveCounter++;
+	    	boardSetting.moveCounter++; //counts valid moves
 	    } else if (currLocation.x >= 101 && currLocation.x <= 200) {
 			column = 1;
 			boardSetting.moveCounter++;
@@ -201,27 +194,25 @@ $(function() {
 	    	column = 6;
 	    	boardSetting.moveCounter++;
 	    } else {
-
+	    	//do nothing
 	    }
 	    
-	    //boardSetting.currentPlayer.red = ;
 	    if(boardSetting.moveCounter % 2 == 0){
 			addDisk(column,boardSetting.currentPlayer.red.color);
+			$("#player").text("Player Turn: Yellow");
 	    } else {
 	    	addDisk(column,boardSetting.currentPlayer.yellow.color);
+	    	$("#player").text("Player Turn: Red");
 	    }
 
 	    drawDisks();
 	    boardSetting.winner = checkWinner();
 		if (boardSetting.winner == 'yellow' || boardSetting.winner == 'red'){
-			alert("Winner is : " + boardSetting.winner );
-			drawDisks();
+			$("#player").text("Winner is: " + boardSetting.winner);
 			initialize();
-			drawDisks();
+			alert(boardSetting.winner + " has won the game. Initializing Board for Next Game. Click OK for a new game");
+			window.location.href=window.location.href;
 		}
-
-
-		//reset here
 
 		};
 	}
