@@ -198,8 +198,8 @@ $(function() {
 	    }
 	    
 	    if(boardSetting.moveCounter % 2 == 0){
-			addDisk(column,boardSetting.currentPlayer.red.color);
-			$("#player").text("Player Turn: Yellow");
+		addDisk(column,boardSetting.currentPlayer.red.color);
+		$("#player").text("Player Turn: Yellow");
 	    } else {
 	    	addDisk(column,boardSetting.currentPlayer.yellow.color);
 	    	$("#player").text("Player Turn: Red");
@@ -207,13 +207,14 @@ $(function() {
 
 	    drawDisks();
 	    boardSetting.winner = checkWinner();
+		
 		if (boardSetting.winner == 'yellow' || boardSetting.winner == 'red'){
 			$("#player").text("Winner is: " + boardSetting.winner);
 			initialize();
-			alert(boardSetting.winner + " has won the game. Initializing Board for Next Game. Click OK for a new game");
+			alert(boardSetting.winner + " has won the game. Click OK for a new game");
 			window.location.href=window.location.href;
 		}
 
-		};
-	}
+      };
+   }
 }(jQuery));
