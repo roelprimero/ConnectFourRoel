@@ -1,1 +1,5 @@
 Release Notes
+
+*limitations*
+- No AI feature 
+- Yellow before Red
